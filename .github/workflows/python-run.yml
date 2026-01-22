@@ -10,13 +10,13 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # Full history needed for git operations
+        fetch-depth: 0  # Full history (already non-shallow)
     
     - name: Create Release Branch
       run: |
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
-        git fetch --prune --unshallow
+        git fetch --prune --tags  # Just fetch tags, no unshallow needed
         
         RELEASE_BRANCH="release-$(date +'%Y-%m-%d')"
         echo "Creating release branch: $RELEASE_BRANCH"
