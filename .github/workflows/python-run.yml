@@ -1,8 +1,10 @@
 name: Run Python Script and Create Release Branch
-
 on:
   push:
     branches: [ master ]
+  
+permissions:
+  contents: write  # Required for git push
 
 jobs:
   create-release-branch:
@@ -10,13 +12,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # Full history (already non-shallow)
+        fetch-depth: 0
     
     - name: Create Release Branch
       run: |
-        git config user.name "github-actions"
-        git config user.email "github-actions@github.com"
-        git fetch --prune --tags  # Just fetch tags, no unshallow needed
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+        git fetch --prune --tags
         
         RELEASE_BRANCH="release-$(date +'%Y-%m-%d')"
         echo "Creating release branch: $RELEASE_BRANCH"
@@ -28,17 +31,3 @@ jobs:
           git push origin "$RELEASE_BRANCH"
           echo "Release branch '$RELEASE_BRANCH' pushed successfully."
         fi
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  run-script:
-    runs-on: ubuntu-latest
-    needs: create-release-branch
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python 3.12
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.12'
-    - name: Execute Python script
-      run: python hello.py
