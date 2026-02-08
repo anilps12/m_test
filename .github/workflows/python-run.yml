@@ -21,7 +21,7 @@ jobs:
         git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
         git fetch --prune --tags
         
-        RELEASE_BRANCH="release-$(TZ=Asia/Kolkata date +'%Y-%m-%d-%H%M%S')"
+        RELEASE_BRANCH="release-$(TZ=Asia/Kolkata date -u +'%Y-%m-%d-%H%M%S')"
         echo "Creating release branch: $RELEASE_BRANCH"
         
         if git ls-remote --exit-code --heads origin "$RELEASE_BRANCH" > /dev/null 2>&1; then
